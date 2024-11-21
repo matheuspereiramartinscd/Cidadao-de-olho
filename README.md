@@ -106,5 +106,6 @@ http://127.0.0.1:8000/home
 ![Screenshot_3](https://github.com/user-attachments/assets/0362e60d-a17d-4bcd-a2c2-e720de201c10)
 ![Screenshot_2](https://github.com/user-attachments/assets/4ad28afa-dcc8-4bdd-a0da-06aca5bd27ab)
 ![Screenshot_4](https://github.com/user-attachments/assets/3c0740df-626d-42cf-8cc1-4ca99f25f352)
+![Screenshot_1](https://github.com/user-attachments/assets/bd9e633c-09db-464b-9025-a804ced45750)
 
 

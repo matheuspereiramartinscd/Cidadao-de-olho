@@ -1,66 +1,78 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Cidadão de Olho - Plataforma de Monitoramento de Gastos Públicos
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este projeto é uma **prova de conceito** desenvolvida para atender à necessidade de monitorar os gastos públicos em verbas indenizatórias na Assembleia Legislativa de Minas Gerais (ALMG). O objetivo é facilitar o acesso a dados sobre o uso de recursos pelos deputados estaduais e proporcionar uma maneira interativa e acessível para a população acompanhar esses gastos.
 
-## About Laravel
+A plataforma também oferece insights sobre o impacto das redes sociais na divulgação desses dados, permitindo um melhor entendimento sobre os canais mais utilizados pelos parlamentares.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Funcionalidades
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Principais Recursos
+- **Monitoramento de Reembolsos:**
+  - Exibe os **5 deputados mais gastadores** por mês, com dados exclusivos do ano de 2019.
+- **Ranking de Redes Sociais:**
+  - Apresenta a classificação das redes sociais mais utilizadas pelos deputados, ordenadas de forma decrescente.
+- **Interface de API JSON:**
+  - Disponibiliza os dados de forma estruturada para fácil integração com outros sistemas.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Tecnologias Utilizadas
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Backend
+- **PHP**: Linguagem principal para desenvolvimento do sistema.
+- **Laravel**: Framework PHP usado para criar APIs robustas e bem estruturadas.
+- **GuzzleHTTP**: Biblioteca para realizar chamadas à API pública da ALMG.
+- **Migrations e Seeders**: Ferramentas do Laravel para criação e manipulação do banco de dados.
+- **JWT Authentication**: Garantia de segurança nas interações com a API.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Banco de Dados
+- **MySQL**: Banco relacional escolhido para armazenar os dados dos deputados, reembolsos e redes sociais.
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Funcionalidades Técnicas
 
-### Premium Partners
+1. **Consumo de API Pública:**
+   - Integração com a API pública da ALMG para buscar dados de deputados em exercício e seus reembolsos:
+     - Deputados em exercício: [API Deputados em Exercício](http://dadosabertos.almg.gov.br/ws/deputados/em_exercicio).
+     - Reembolsos: [API de Verbas Indenizatórias](http://dadosabertos.almg.gov.br/ws/ajuda/sobre).
+   - Os dados são armazenados localmente para otimização e consultas rápidas.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+2. **Endpoints Criados:**
+   - **Top 5 Deputados Gastadores (2019):**
+     - Endpoint: `/api/top-deputados?mes={mes}`
+     - Retorna o ranking mensal de deputados que mais solicitaram reembolsos.
+   - **Ranking de Redes Sociais:**
+     - Endpoint: `/api/ranking-redes-sociais`
+     - Retorna o uso das redes sociais por deputados, ordenado por frequência de uso.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Estrutura do Projeto
 
-## Code of Conduct
+### Organização
+- **Controllers:** Gerenciam as regras de negócio e chamadas para o banco de dados.
+- **Models:** Representam as entidades principais, como `Deputado` e `Reembolso`.
+- **Migrations:** Criam as tabelas `deputados`, `reembolsos` e `redes_sociais` no banco de dados.
+- **Seeders:** Popularam as tabelas iniciais com dados da API pública.
+- **Rotas:** Rotas REST para acessar os dados.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Instruções de Instalação e Execução
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Requisitos
+- PHP >= 8.2
+- Composer
+- MySQL
+- Node.js >= 16
+- Laravel Sail (opcional para ambiente Docker)
 
-## License
+### Passo a Passo
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. **Clone o Repositório:**
+   ```bash
+   git clone https://github.com/seu-usuario/cidadao-de-olho.git
+   cd cidadao-de-olho

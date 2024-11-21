@@ -77,6 +77,9 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - Salve o arquivo em um local seguro, como C:\php\extras\ssl\cacert.pem
 - Abra o php.ini e substitua curl.cainfo = "C:\php\extras\ssl\cacert.pem" e openssl.cafile="C:\php\extras\ssl\cacert.pem"
 - Altere max_execution_time = 30 para max_execution_time = 300
+- Altere ;extension=pdo_sqlite para extension=pdo_sqlite
+- Altere ;extension=pdo_firebird para extension=pdo_firebird
+- Caso for preciso rode o comando php artisan key:generate
 
 1. **Clone o Repositório:**
    ```bash

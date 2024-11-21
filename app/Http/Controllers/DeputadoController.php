@@ -61,6 +61,7 @@ class DeputadoController extends Controller
             }
 
             return response()->json($deputados);
+            
         }
 
         return response()->json(['error' => 'Erro ao consultar a API'], 500);
@@ -69,7 +70,14 @@ class DeputadoController extends Controller
     // Método para calcular e retornar o ranking dos reembolsos de Janeiro
     // Método para calcular e retornar o ranking dos reembolsos de Janeiro
     // Método para calcular e retornar o ranking dos reembolsos de Fevereiro
-    
+    public function deputados()
+{
+    // Pega todos os deputados do banco de dados
+    $deputados = Deputado::all(); 
+
+    // Retorna a view com os dados dos deputados
+    return view('deputados', compact('deputados')); 
+}
 // Método para retornar o total de reembolsos de um único deputado (ID 4458)
 public function totalReembolsadoDeputado4458()
 {
@@ -341,7 +349,10 @@ public function rankingReembolsosMarco ()
     // Retorna o resultado em formato JSON com os 5 deputados com maiores valores reembolsados
     return response()->json($topDeputadosFormatted);
 }
-
+public function rankingReembolsosView()
+{
+    return view('ranking-reembolsos');
+}
 public function rankingReembolsosAbril ()
 {
     $mes = 4;  // Abril  
@@ -1023,4 +1034,20 @@ public function rankingReembolsosDezembro ()
 
         return response()->json($redesSociais);
     }
+
+    public function rankingRedesSociaisFront()
+{
+    $redesSociais = RedeSocial::join('deputados', 'rede_sociais.deputado_id', '=', 'deputados.id')
+        ->groupBy('rede_sociais.nome')
+        ->selectRaw('count(rede_sociais.deputado_id) as total, rede_sociais.nome')
+        ->orderByDesc('total')
+        ->get();
+
+    return response()->json($redesSociais); // Retorna os dados como JSON
+}
+
+    public function rankingRedesSociaisView()
+{
+    return view('ranking-redes-sociais'); // Retorna a view com o ranking
+}
 }

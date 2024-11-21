@@ -7,6 +7,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/home', function () {
+    return view('home');
+});
+
 // Rota para atualizar os reembolsos de janeiro de 2019
 
 
@@ -25,8 +29,14 @@ Route::get('/ranking-reembolsos-novembro', [DeputadoController::class, 'rankingR
 Route::get('/ranking-reembolsos-dezembro', [DeputadoController::class, 'rankingReembolsosDezembro']);
 
 
+Route::get('/deputados', [DeputadoController::class, 'deputados']);
+Route::get('/ranking-reembolsos', [DeputadoController::class, 'rankingReembolsosView']);
+
 // Rota para o ranking de redes sociais (deputados mais ativos nas redes sociais)
 Route::get('/ranking-redes-sociais', [DeputadoController::class, 'rankingRedesSociais']);
+
+
+Route::get('/ranking-redes-sociais-front', [DeputadoController::class, 'rankingRedesSociaisView']);
 
 // Rota para carregar deputados da API da ALMG
 Route::get('/get-deputados', [DeputadoController::class, 'getDeputados']);

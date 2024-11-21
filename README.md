@@ -76,7 +76,7 @@ npm install
 
 1. **Clone o Repositório:**
    ```bash
-   git clone https://github.com/seu-usuario/cidadao-de-olho.git
+   git clone https://github.com/matheuspereiramartinscd/Cidadao-de-olho.git
    cd cidadao-de-olho
 
 2. **Instale as dependências do backend e frontend:**

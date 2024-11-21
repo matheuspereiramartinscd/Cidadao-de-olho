@@ -71,8 +71,14 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - Laravel Sail (opcional para ambiente Docker)
 
 ### Passo a Passo
-composer install
-npm install
+Instale o xampp
+Adicione a pasta do php no PATH do windows
+Baixe o arquivo cacert.pem do site oficial: https://curl.se/ca/cacert.pem
+Salve o arquivo em um local seguro, como C:\php\extras\ssl\cacert.pem
+Abra o php.ini e substitua curl.cainfo = "C:\php\extras\ssl\cacert.pem" e openssl.cafile="C:\php\extras\ssl\cacert.pem"
+Altere max_execution_time = 30 para max_execution_time = 300
+
+
 
 1. **Clone o Repositório:**
    ```bash

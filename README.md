@@ -4,7 +4,8 @@ Este projeto é uma **prova de conceito** desenvolvida para atender à necessida
 
 A plataforma também oferece insights sobre o impacto das redes sociais na divulgação desses dados, permitindo um melhor entendimento sobre os canais mais utilizados pelos parlamentares.
 
----
+
+
 
 ## Funcionalidades
 
@@ -16,7 +17,10 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - **Interface de API JSON:**
   - Disponibiliza os dados de forma estruturada para fácil integração com outros sistemas.
 
----
+
+
+
+
 
 ## Tecnologias Utilizadas
 
@@ -27,9 +31,10 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - **Migrations e Seeders**: Ferramentas do Laravel para criação e manipulação do banco de dados.
 
 ### Banco de Dados
-- **MySQL**: Banco relacional escolhido para armazenar os dados dos deputados, reembolsos e redes sociais.
+- **MySQL**: Banco relacional escolhido para armazenar os dados dos deputados e redes sociais.
 
----
+
+
 
 ## Funcionalidades Técnicas
 
@@ -47,18 +52,18 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
      - Endpoint: `/api/ranking-redes-sociais`
      - Retorna o uso das redes sociais por deputados, ordenado por frequência de uso.
 
----
+
 
 ## Estrutura do Projeto
 
 ### Organização
 - **Controllers:** Gerenciam as regras de negócio e chamadas para o banco de dados.
 - **Models:** Representam as entidades principais, como `Deputado` e `Reembolso`.
-- **Migrations:** Criam as tabelas `deputados`, `reembolsos` e `redes_sociais` no banco de dados.
+- **Migrations:** Criam as tabelas `deputados` e `redes_sociais` no banco de dados.
 - **Seeders:** Popularam as tabelas iniciais com dados da API pública.
-- **Rotas:** Rotas REST para acessar os dados.
+- **Rotas:** Rotas para acessar os dados.
 
----
+
 
 ## Instruções de Instalação e Execução
 
@@ -67,7 +72,7 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - Composer
 - MySQL
 - Node.js >= 16
-- Laravel Sail (opcional para ambiente Docker)
+
 
 ### Passo a Passo
 - Instale o xampp
@@ -81,37 +86,63 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - Caso for preciso rode o comando php artisan key:generate
 
 1. **Clone o Repositório:**
-   ```bash
-   git clone https://github.com/matheuspereiramartinscd/Cidadao-de-olho.git
-   cd cidadao-de-olho
+
+       git clone https://github.com/matheuspereiramartinscd/Cidadao-de-olho.git
+    
+       cd cidadao-de-olho
 
 2. **Instale as dependências do backend e frontend:**
-composer install
-npm install
+
+        composer install
+    
+        npm install
 
 3. **Configure o Banco de Dados**
-Crie um banco de dados no MySQL (por exemplo, cidadao_de_olho).
-Configure as credenciais do banco de dados no arquivo .env:
-
--DB_CONNECTION=mysql
--DB_HOST=127.0.0.1
--DB_PORT=3306
--DB_DATABASE=cidadao_de_olho
--DB_USERNAME=root
--DB_PASSWORD=
+        Crie um banco de dados no MySQL (por exemplo, cidadao_de_olho).
+        
+        Configure as credenciais do banco de dados no arquivo .env:
+        
+        DB_CONNECTION=mysql
+        
+        DB_HOST=127.0.0.1
+        
+        DB_PORT=3306
+        
+        DB_DATABASE=cidadao_de_olho
+        
+        DB_USERNAME=root
+        
+        DB_PASSWORD=
 
 4. **Execute as Migrations e Seeders**
-php artisan migrate
+
+        php artisan migrate
 
 5. **Inicie o Servidor**
-php artisan serve
+
+        php artisan serve
 
 6. **Acesse a API**
-Após iniciar o servidor, acesse a rota http:127.0.0.1:8000/get-deputados para obter os dados e salvar no banco
-Depois acesse a rota http://127.0.0.1:8000/home para visualizar os deputados, ranking de reembolsos e ranking de redes sociais
+
+        Após iniciar o servidor, acesse a rota http:127.0.0.1:8000/get-deputados para obter os dados e salvar no banco
+    
+        Depois acesse a rota http://127.0.0.1:8000/home para visualizar os deputados, ranking de reembolsos e ranking de redes sociais
+
+
+</br>
+
 ![Screenshot_1](https://github.com/user-attachments/assets/bd9e633c-09db-464b-9025-a804ced45750)
+
+</br>
+
 ![Screenshot_3](https://github.com/user-attachments/assets/0362e60d-a17d-4bcd-a2c2-e720de201c10)
+
+</br>
+
 ![Screenshot_2](https://github.com/user-attachments/assets/4ad28afa-dcc8-4bdd-a0da-06aca5bd27ab)
+
+</br>
+
 ![Screenshot_4](https://github.com/user-attachments/assets/3c0740df-626d-42cf-8cc1-4ca99f25f352)
 
 

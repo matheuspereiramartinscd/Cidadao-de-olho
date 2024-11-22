@@ -93,12 +93,12 @@ npm install
 Crie um banco de dados no MySQL (por exemplo, cidadao_de_olho).
 Configure as credenciais do banco de dados no arquivo .env:
 
--DB_CONNECTION=mysql
--DB_HOST=127.0.0.1
--DB_PORT=3306
--DB_DATABASE=cidadao_de_olho
--DB_USERNAME=root
--DB_PASSWORD=
+- DB_CONNECTION=mysql
+- DB_HOST=127.0.0.1
+- DB_PORT=3306
+- DB_DATABASE=cidadao_de_olho
+- DB_USERNAME=root
+- DB_PASSWORD=
 
 4. **Execute as Migrations e Seeders**
 php artisan migrate

@@ -93,9 +93,9 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - Crie um banco de dados no MySQL (por exemplo, cidadao_de_olho).
 - Configure as credenciais do banco de dados no arquivo .env:
 
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
+- DB_CONNECTION=mysql
+- DB_HOST=127.0.0.1
+- DB_PORT=3306
 - DB_DATABASE=cidadao_de_olho
 - DB_USERNAME=root
 - DB_PASSWORD=

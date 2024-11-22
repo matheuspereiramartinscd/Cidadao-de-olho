@@ -8,7 +8,7 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 
 
 ## Funcionalidades
-</br>
+
 ### Principais Recursos
 - **Monitoramento de Reembolsos:**
   - Exibe os **5 deputados mais gastadores** por mês, com dados exclusivos do ano de 2019.

@@ -83,6 +83,7 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 1. **Clone o Repositório:**
 
    git clone https://github.com/matheuspereiramartinscd/Cidadao-de-olho.git
+
    cd cidadao-de-olho
 
 2. **Instale as dependências do backend e frontend:**

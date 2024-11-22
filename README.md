@@ -25,7 +25,6 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - **Laravel**: Framework PHP usado para criar APIs robustas e bem estruturadas.
 - **GuzzleHTTP**: Biblioteca para realizar chamadas à API pública da ALMG.
 - **Migrations e Seeders**: Ferramentas do Laravel para criação e manipulação do banco de dados.
-- **JWT Authentication**: Garantia de segurança nas interações com a API.
 
 ### Banco de Dados
 - **MySQL**: Banco relacional escolhido para armazenar os dados dos deputados, reembolsos e redes sociais.

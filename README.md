@@ -5,7 +5,9 @@ Este projeto é uma **prova de conceito** desenvolvida para atender à necessida
 A plataforma também oferece insights sobre o impacto das redes sociais na divulgação desses dados, permitindo um melhor entendimento sobre os canais mais utilizados pelos parlamentares.
 
 
----
+</br>
+</br>
+</br>
 
 
 

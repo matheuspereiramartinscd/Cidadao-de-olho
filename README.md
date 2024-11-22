@@ -61,7 +61,7 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - **Models:** Representam as entidades principais, como `Deputado` e `Reembolso`.
 - **Migrations:** Criam as tabelas `deputados` e `redes_sociais` no banco de dados.
 - **Seeders:** Popularam as tabelas iniciais com dados da API pública.
-- **Rotas:** Rotas REST para acessar os dados.
+- **Rotas:** Rotas para acessar os dados.
 
 
 
@@ -72,7 +72,7 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - Composer
 - MySQL
 - Node.js >= 16
-- Laravel Sail (opcional para ambiente Docker)
+
 
 ### Passo a Passo
 - Instale o xampp

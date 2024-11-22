@@ -140,9 +140,13 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 </br>
 
 ![Screenshot_3](https://github.com/user-attachments/assets/0362e60d-a17d-4bcd-a2c2-e720de201c10)
+
 </br>
+
 ![Screenshot_2](https://github.com/user-attachments/assets/4ad28afa-dcc8-4bdd-a0da-06aca5bd27ab)
+
 </br>
+
 ![Screenshot_4](https://github.com/user-attachments/assets/3c0740df-626d-42cf-8cc1-4ca99f25f352)
 
 

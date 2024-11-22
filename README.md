@@ -87,9 +87,9 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 
 2. **Instale as dependências do backend e frontend:**
 
-composer install
+    composer install
 
-npm install
+    npm install
 
 3. **Configure o Banco de Dados**
 Crie um banco de dados no MySQL (por exemplo, cidadao_de_olho).

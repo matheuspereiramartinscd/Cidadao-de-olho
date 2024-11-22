@@ -6,6 +6,9 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 
 
 
+
+
+
 ## Funcionalidades
 
 ### Principais Recursos
@@ -15,6 +18,9 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
   - Apresenta a classificação das redes sociais mais utilizadas pelos deputados, ordenadas de forma decrescente.
 - **Interface de API JSON:**
   - Disponibiliza os dados de forma estruturada para fácil integração com outros sistemas.
+
+
+
 
 
 

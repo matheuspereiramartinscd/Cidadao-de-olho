@@ -119,9 +119,9 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 
 6. **Acesse a API**
 
-    Após iniciar o servidor, acesse a rota http:127.0.0.1:8000/get-deputados para obter os dados e salvar no banco
+        Após iniciar o servidor, acesse a rota http:127.0.0.1:8000/get-deputados para obter os dados e salvar no banco
     
-    Depois acesse a rota http://127.0.0.1:8000/home para visualizar os deputados, ranking de reembolsos e ranking de redes sociais
+        Depois acesse a rota http://127.0.0.1:8000/home para visualizar os deputados, ranking de reembolsos e ranking de redes sociais
 
 ![Screenshot_1](https://github.com/user-attachments/assets/bd9e633c-09db-464b-9025-a804ced45750)
 ![Screenshot_3](https://github.com/user-attachments/assets/0362e60d-a17d-4bcd-a2c2-e720de201c10)

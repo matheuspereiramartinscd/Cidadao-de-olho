@@ -87,32 +87,32 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 
 2. **Instale as dependências do backend e frontend:**
 
-    composer install
-
-    npm install
+        composer install
+    
+        npm install
 
 3. **Configure o Banco de Dados**
-    Crie um banco de dados no MySQL (por exemplo, cidadao_de_olho).
-    
-    Configure as credenciais do banco de dados no arquivo .env:
-    
-    DB_CONNECTION=mysql
-    
-    DB_HOST=127.0.0.1
-    
-    DB_PORT=3306
-    
-    DB_DATABASE=cidadao_de_olho
-    
-    DB_USERNAME=root
-    
-    DB_PASSWORD=
+        Crie um banco de dados no MySQL (por exemplo, cidadao_de_olho).
+        
+        Configure as credenciais do banco de dados no arquivo .env:
+        
+        DB_CONNECTION=mysql
+        
+        DB_HOST=127.0.0.1
+        
+        DB_PORT=3306
+        
+        DB_DATABASE=cidadao_de_olho
+        
+        DB_USERNAME=root
+        
+        DB_PASSWORD=
 
 4. **Execute as Migrations e Seeders**
-    php artisan migrate
+        php artisan migrate
 
 5. **Inicie o Servidor**
-    php artisan serve
+        php artisan serve
 
 6. **Acesse a API**
     Após iniciar o servidor, acesse a rota http:127.0.0.1:8000/get-deputados para obter os dados e salvar no banco

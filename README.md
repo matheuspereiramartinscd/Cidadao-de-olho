@@ -81,7 +81,7 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - Caso for preciso rode o comando php artisan key:generate
 
 1. **Clone o Repositório:**
-   ```bash
+
    git clone https://github.com/matheuspereiramartinscd/Cidadao-de-olho.git
    cd cidadao-de-olho
 
@@ -109,12 +109,15 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
         DB_PASSWORD=
 
 4. **Execute as Migrations e Seeders**
+
         php artisan migrate
 
 5. **Inicie o Servidor**
+
         php artisan serve
 
 6. **Acesse a API**
+
     Após iniciar o servidor, acesse a rota http:127.0.0.1:8000/get-deputados para obter os dados e salvar no banco
     
     Depois acesse a rota http://127.0.0.1:8000/home para visualizar os deputados, ranking de reembolsos e ranking de redes sociais

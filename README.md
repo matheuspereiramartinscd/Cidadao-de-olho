@@ -31,7 +31,7 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - **Migrations e Seeders**: Ferramentas do Laravel para criação e manipulação do banco de dados.
 
 ### Banco de Dados
-- **MySQL**: Banco relacional escolhido para armazenar os dados dos deputados, reembolsos e redes sociais.
+- **MySQL**: Banco relacional escolhido para armazenar os dados dos deputados e redes sociais.
 
 
 

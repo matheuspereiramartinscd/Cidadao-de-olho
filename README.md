@@ -86,6 +86,7 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
    cd cidadao-de-olho
 
 2. **Instale as dependências do backend e frontend:**
+
 composer install
 
 npm install

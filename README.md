@@ -21,7 +21,9 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - **Interface de API JSON:**
   - Disponibiliza os dados de forma estruturada para fácil integração com outros sistemas.
 
-
+</br>
+</br>
+</br>
 
 
 
@@ -37,7 +39,9 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 ### Banco de Dados
 - **MySQL**: Banco relacional escolhido para armazenar os dados dos deputados, reembolsos e redes sociais.
 
-
+</br>
+</br>
+</br>
 
 ## Funcionalidades Técnicas
 
@@ -55,7 +59,9 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
      - Endpoint: `/api/ranking-redes-sociais`
      - Retorna o uso das redes sociais por deputados, ordenado por frequência de uso.
 
-
+</br>
+</br>
+</br>
 
 ## Estrutura do Projeto
 
@@ -66,7 +72,9 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - **Seeders:** Popularam as tabelas iniciais com dados da API pública.
 - **Rotas:** Rotas REST para acessar os dados.
 
-
+</br>
+</br>
+</br>
 
 ## Instruções de Instalação e Execução
 

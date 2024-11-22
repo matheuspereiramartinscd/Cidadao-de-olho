@@ -1054,7 +1054,7 @@ public function rankingReembolsosDezembro ()
 
         return response()->json($redesSociais);
     }
-        /**
+    /**
      * Método para retornar o ranking das redes sociais como JSON.
      * Esse método pode ser usado para integrar os dados do ranking com o frontend.
      *

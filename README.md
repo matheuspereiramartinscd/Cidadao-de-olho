@@ -59,7 +59,7 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 ### Organização
 - **Controllers:** Gerenciam as regras de negócio e chamadas para o banco de dados.
 - **Models:** Representam as entidades principais, como `Deputado` e `Reembolso`.
-- **Migrations:** Criam as tabelas `deputados`, `reembolsos` e `redes_sociais` no banco de dados.
+- **Migrations:** Criam as tabelas `deputados` e `redes_sociais` no banco de dados.
 - **Seeders:** Popularam as tabelas iniciais com dados da API pública.
 - **Rotas:** Rotas REST para acessar os dados.
 

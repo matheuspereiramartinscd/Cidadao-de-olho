@@ -10,7 +10,12 @@ use Carbon\Carbon;
 
 class DeputadoController extends Controller
 {
-    // Método para carregar deputados da API e salvar no banco
+      /**
+     * Carrega a lista de deputados da API externa e salva os dados no banco de dados.
+     * Também salva as redes sociais associadas aos deputados.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getDeputados()
     {
         $response = Http::get('https://dadosabertos.almg.gov.br/ws/deputados/lista_telefonica?formato=json');
@@ -67,9 +72,11 @@ class DeputadoController extends Controller
         return response()->json(['error' => 'Erro ao consultar a API'], 500);
     }
 
-    // Método para calcular e retornar o ranking dos reembolsos de Janeiro
-    // Método para calcular e retornar o ranking dos reembolsos de Janeiro
-    // Método para calcular e retornar o ranking dos reembolsos de Fevereiro
+    /**
+     * Retorna a lista de todos os deputados salvos no banco de dados.
+     *
+     * @return \Illuminate\View\View
+     */
     public function deputados()
 {
     // Pega todos os deputados do banco de dados
@@ -78,7 +85,12 @@ class DeputadoController extends Controller
     // Retorna a view com os dados dos deputados
     return view('deputados', compact('deputados')); 
 }
-// Método para retornar o total de reembolsos de um único deputado (ID 4458)
+
+    /**
+     * Consulta o total de reembolsos do deputado de ID 4458 no mês de fevereiro de 2019.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
 public function totalReembolsadoDeputado4458()
 {
     $deputadoId = 4458; // ID do deputado
@@ -125,6 +137,11 @@ public function totalReembolsadoDeputado4458()
     // Caso haja erro na requisição, retornamos um erro
     return response()->json(['error' => 'Erro ao consultar a API de reembolsos'], 500);
 }
+     /**
+     * Calcula e retorna o ranking dos 5 deputados com maiores reembolsos no mês de janeiro de 2019.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
 public function rankingReembolsosJaneiro()
 {
     $mes = 1;  // Janeiro
@@ -199,9 +216,7 @@ public function rankingReembolsosJaneiro()
     return response()->json($topDeputadosFormatted);
 }
 
-// Método para calcular e retornar o ranking dos reembolsos de Fevereiro
-// Método para calcular e retornar o ranking dos reembolsos de Fevereiro
-// Método para calcular e retornar o ranking dos reembolsos de Fevereiro
+
 public function rankingReembolsosFevereiro()
 {
     $mes = 2;  // Fevereiro
@@ -1022,7 +1037,12 @@ public function rankingReembolsosDezembro ()
 }
 
 
-    // Método para exibir o ranking das redes sociais
+    /**
+     * Calcula e retorna o ranking das redes sociais mais utilizadas pelos deputados.
+     * O cálculo é feito com base na contagem de deputados que possuem uma conta em cada rede social.
+     *
+     * @return \Illuminate\Http\JsonResponse JSON contendo o ranking das redes sociais.
+     */
     public function rankingRedesSociais()
     {
         // Consulta para contar o número de deputados em cada rede social
@@ -1034,7 +1054,12 @@ public function rankingReembolsosDezembro ()
 
         return response()->json($redesSociais);
     }
-
+        /**
+     * Método para retornar o ranking das redes sociais como JSON.
+     * Esse método pode ser usado para integrar os dados do ranking com o frontend.
+     *
+     * @return \Illuminate\Http\JsonResponse JSON contendo o ranking das redes sociais.
+     */
     public function rankingRedesSociaisFront()
 {
     $redesSociais = RedeSocial::join('deputados', 'rede_sociais.deputado_id', '=', 'deputados.id')

@@ -11,10 +11,10 @@ Route::get('/home', function () {
     return view('home');
 });
 
-// Rota para atualizar os reembolsos de janeiro de 2019
-
-
-// Rota para o ranking dos 5 deputados com mais reembolsos de janeiro de 2019
+/**
+ * Rota para exibir o ranking dos deputados com os maiores reembolsos de janeiro de 2019.
+ * A lógica de cálculo dos reembolsos é definida no método 'rankingReembolsosJaneiro' do 'DeputadoController'.
+ */
 Route::get('/ranking-reembolsos-janeiro', [DeputadoController::class, 'rankingReembolsosJaneiro']);
 Route::get('/ranking-reembolsos-fevereiro', [DeputadoController::class, 'rankingReembolsosFevereiro']);
 Route::get('/ranking-reembolsos-marco', [DeputadoController::class, 'rankingReembolsosMarco']);
@@ -28,17 +28,23 @@ Route::get('/ranking-reembolsos-outubro', [DeputadoController::class, 'rankingRe
 Route::get('/ranking-reembolsos-novembro', [DeputadoController::class, 'rankingReembolsosNovembro']);
 Route::get('/ranking-reembolsos-dezembro', [DeputadoController::class, 'rankingReembolsosDezembro']);
 
-
+// Rota para exibir todos os deputados cadastrados no banco de dados
 Route::get('/deputados', [DeputadoController::class, 'deputados']);
+
+// Rota para exibir a página do ranking de reembolsos
 Route::get('/ranking-reembolsos', [DeputadoController::class, 'rankingReembolsosView']);
 
-// Rota para o ranking de redes sociais (deputados mais ativos nas redes sociais)
+/**
+ * Rota para exibir o ranking dos deputados mais ativos nas redes sociais.
+ * O método 'rankingRedesSociais' do 'DeputadoController' é responsável por calcular esse ranking.
+ */
 Route::get('/ranking-redes-sociais', [DeputadoController::class, 'rankingRedesSociais']);
 
-
+// Rota para exibir o ranking das redes sociais na interface do frontend
 Route::get('/ranking-redes-sociais-front', [DeputadoController::class, 'rankingRedesSociaisView']);
 
 // Rota para carregar deputados da API da ALMG
 Route::get('/get-deputados', [DeputadoController::class, 'getDeputados']);
-// Em routes/api.php
+
+// Rota para consultar o total de reembolsos de um deputado específico (ID 4458) em 2019
 Route::get('/deputado/total-reembolsado/4458', [DeputadoController::class, 'totalReembolsadoDeputado4458']);

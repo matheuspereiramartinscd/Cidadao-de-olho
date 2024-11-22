@@ -4,7 +4,7 @@ Este projeto é uma **prova de conceito** desenvolvida para atender à necessida
 
 A plataforma também oferece insights sobre o impacto das redes sociais na divulgação desses dados, permitindo um melhor entendimento sobre os canais mais utilizados pelos parlamentares.
 
----
+
 
 ## Funcionalidades
 
@@ -16,7 +16,7 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - **Interface de API JSON:**
   - Disponibiliza os dados de forma estruturada para fácil integração com outros sistemas.
 
----
+
 
 ## Tecnologias Utilizadas
 
@@ -29,7 +29,7 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 ### Banco de Dados
 - **MySQL**: Banco relacional escolhido para armazenar os dados dos deputados, reembolsos e redes sociais.
 
----
+
 
 ## Funcionalidades Técnicas
 
@@ -47,7 +47,7 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
      - Endpoint: `/api/ranking-redes-sociais`
      - Retorna o uso das redes sociais por deputados, ordenado por frequência de uso.
 
----
+
 
 ## Estrutura do Projeto
 
@@ -58,7 +58,7 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 - **Seeders:** Popularam as tabelas iniciais com dados da API pública.
 - **Rotas:** Rotas REST para acessar os dados.
 
----
+
 
 ## Instruções de Instalação e Execução
 

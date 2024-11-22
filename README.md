@@ -86,19 +86,26 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
    cd cidadao-de-olho
 
 2. **Instale as dependências do backend e frontend:**
-- composer install
-- npm install
+composer install
+
+npm install
 
 3. **Configure o Banco de Dados**
-- Crie um banco de dados no MySQL (por exemplo, cidadao_de_olho).
-- Configure as credenciais do banco de dados no arquivo .env:
+Crie um banco de dados no MySQL (por exemplo, cidadao_de_olho).
 
-- DB_CONNECTION=mysql
-- DB_HOST=127.0.0.1
-- DB_PORT=3306
-- DB_DATABASE=cidadao_de_olho
-- DB_USERNAME=root
-- DB_PASSWORD=
+Configure as credenciais do banco de dados no arquivo .env:
+
+DB_CONNECTION=mysql
+
+DB_HOST=127.0.0.1
+
+DB_PORT=3306
+
+DB_DATABASE=cidadao_de_olho
+
+DB_USERNAME=root
+
+DB_PASSWORD=
 
 4. **Execute as Migrations e Seeders**
 php artisan migrate
@@ -107,8 +114,10 @@ php artisan migrate
 php artisan serve
 
 6. **Acesse a API**
-- Após iniciar o servidor, acesse a rota http:127.0.0.1:8000/get-deputados para obter os dados e salvar no banco
-- Depois acesse a rota http://127.0.0.1:8000/home para visualizar os deputados, ranking de reembolsos e ranking de redes sociais
+Após iniciar o servidor, acesse a rota http:127.0.0.1:8000/get-deputados para obter os dados e salvar no banco
+
+Depois acesse a rota http://127.0.0.1:8000/home para visualizar os deputados, ranking de reembolsos e ranking de redes sociais
+
 ![Screenshot_1](https://github.com/user-attachments/assets/bd9e633c-09db-464b-9025-a804ced45750)
 ![Screenshot_3](https://github.com/user-attachments/assets/0362e60d-a17d-4bcd-a2c2-e720de201c10)
 ![Screenshot_2](https://github.com/user-attachments/assets/4ad28afa-dcc8-4bdd-a0da-06aca5bd27ab)

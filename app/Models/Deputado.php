@@ -18,16 +18,8 @@ class Deputado extends Model
         'naturalidadeMunicipio', 'naturalidadeUf', 'dataNascimento'
     ];
 
-    // Definindo relacionamento com as redes sociais (se você for usar isso)
-    public function redesSociais()
-    {
-        return $this->hasMany(RedeSocial::class);
-    }
 
     
 
-public function reembolsos()
-{
-    return $this->hasMany(Reembolso::class);
-}
+
 }

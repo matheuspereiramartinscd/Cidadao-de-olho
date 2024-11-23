@@ -7,9 +7,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/home', function () {
-    return view('home');
-});
 
 // Rota para exibir o ranking dos deputados com os maiores reembolsos de um mês específico
 Route::get('/ranking-reembolsos/{mes}', [DeputadoController::class, 'rankingReembolsos']);

@@ -117,7 +117,6 @@
 
     <header>
         <div class="logo-titulo-container">
-
             <h1>Lista de Deputados</h1>
         </div>
     </header>
@@ -126,6 +125,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>Ranking</th>
                     <th>Nome</th>
                     <th>Partido</th>
                     <th>Email</th>
@@ -133,8 +133,9 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($deputados as $deputado)
+                @foreach($deputados as $index => $deputado)
                     <tr>
+                        <td>{{ $index + 1 }}</td> <!-- Ranking numérico -->
                         <td>{{ $deputado->nome }}</td>
                         <td>{{ $deputado->partido }}</td>
                         <td>{{ $deputado->email }}</td>
@@ -145,7 +146,7 @@
         </table>
 
         <div class="button-container">
-        <a href="/" class="button">Página Principal</a>
+            <a href="/" class="button">Página Principal</a>
             <a href="/ranking-redes-sociais" class="button">Ranking Redes Sociais</a>
             <a href="/ranking-reembolsos" class="button">Ranking Reembolsos</a>
         </div>

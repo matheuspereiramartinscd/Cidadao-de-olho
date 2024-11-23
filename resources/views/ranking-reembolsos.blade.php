@@ -220,7 +220,7 @@
                         deputados.forEach((item, index) => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
-                                <td>${index + 1}</td>
+                                <td>${index + 1}º</td>
                                 <td>${item.deputado.nome}</td>
                                 <td>R$ ${item.total_reembolsado}</td>
                             `;

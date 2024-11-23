@@ -79,7 +79,7 @@
 
     <script>
         // Fazendo a requisição à API para listar as redes sociais
-        fetch('/ranking-redes-sociais')
+        fetch('/ranking-redes-sociais/json')
             .then(response => response.json())
             .then(data => {
                 const table = document.getElementById('redes-social-table');

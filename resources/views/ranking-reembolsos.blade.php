@@ -27,27 +27,6 @@
         .container {
             width: 80%;
             margin: 20px auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-label {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            display: block;
-            color: #333;
-        }
-
-        .form-select {
-            width: 100%;
-            padding: 10px;
-            font-size: 1rem;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         table {
@@ -77,8 +56,20 @@
             background-color: #f1f1f1;
         }
 
-        #ranking {
-            margin-top: 20px;
+        .form-select {
+            padding: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+
+        #loading {
+            font-size: 1.2rem;
+            color: #007BFF;
+            text-align: center;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -91,21 +82,22 @@
     <div class="container">
         <label for="mes" class="form-label">Escolha o Mês</label>
         <select id="mes" class="form-select" onchange="carregarRanking()">
-            <option value="janeiro"selected>Janeiro</option>
-            <option value="fevereiro">Fevereiro</option>
-            <option value="marco">Março</option>
-            <option value="abril">Abril</option>
-            <option value="maio">Maio</option>
-            <option value="junho">Junho</option>
-            <option value="julho">Julho</option>
-            <option value="agosto">Agosto</option>
-            <option value="setembro">Setembro</option>
-            <option value="outubro">Outubro</option>
-            <option value="novembro">Novembro</option>
-            <option value="dezembro">Dezembro</option>
+            <option value="1" selected>Janeiro</option>
+            <option value="2">Fevereiro</option>
+            <option value="3">Março</option>
+            <option value="4">Abril</option>
+            <option value="5">Maio</option>
+            <option value="6">Junho</option>
+            <option value="7">Julho</option>
+            <option value="8">Agosto</option>
+            <option value="9">Setembro</option>
+            <option value="10">Outubro</option>
+            <option value="11">Novembro</option>
+            <option value="12">Dezembro</option>
         </select>
 
         <div id="ranking">
+            <p id="loading" style="display: none;">Carregando dados...</p>
             <table>
                 <thead>
                     <tr>
@@ -124,27 +116,41 @@
     <script>
         function carregarRanking() {
             const mes = document.getElementById('mes').value;
-            const apiUrl = `/ranking-reembolsos-${mes}`;
+            const apiUrl = `/ranking-reembolsos/${mes}`;
+
+            // Exibir mensagem de carregamento
+            const loadingElement = document.getElementById('loading');
+            loadingElement.style.display = 'block';
 
             fetch(apiUrl)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erro: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     const table = document.getElementById('ranking-table');
                     table.innerHTML = '';
 
-                    const sortedData = Object.entries(data).sort(([, a], [, b]) => {
-                        const valorA = parseFloat(a.total_reembolsado.replace('R$', '').replace('.', '').replace(',', '.'));
-                        const valorB = parseFloat(b.total_reembolsado.replace('R$', '').replace('.', '').replace(',', '.'));
-                        return valorB - valorA; // Ordem decrescente
+                    // Usar Object.values para acessar os valores do objeto retornado
+                    const deputados = Object.values(data);
+
+                    // Ordenar os deputados pelo total reembolsado de forma decrescente
+                    deputados.sort((a, b) => {
+                        // Converter os valores para números, considerando a vírgula como separador decimal
+                        const totalA = parseFloat(a.total_reembolsado.replace('R$ ', '').replace('.', '').replace(',', '.'));
+                        const totalB = parseFloat(b.total_reembolsado.replace('R$ ', '').replace('.', '').replace(',', '.'));
+                        return totalB - totalA; // Ordenação decrescente
                     });
 
-                    if (sortedData.length > 0) {
-                        sortedData.forEach(([_, info], index) => {
+                    if (deputados.length > 0) {
+                        deputados.forEach((item, index) => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 <td>${index + 1}</td>
-                                <td>${info.deputado.nome}</td>
-                                <td>${info.total_reembolsado}</td>
+                                <td>${item.deputado.nome}</td>
+                                <td>R$ ${item.total_reembolsado}</td>
                             `;
                             table.appendChild(row);
                         });
@@ -156,6 +162,9 @@
                     console.error('Erro ao carregar os dados:', error);
                     const table = document.getElementById('ranking-table');
                     table.innerHTML = '<tr><td colspan="3">Erro ao carregar os dados</td></tr>';
+                })
+                .finally(() => {
+                    loadingElement.style.display = 'none';
                 });
         }
 

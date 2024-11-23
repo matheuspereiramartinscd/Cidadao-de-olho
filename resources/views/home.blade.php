@@ -68,7 +68,7 @@
         <h2>Escolha uma opção:</h2>
         <div class="button-container">
             <a href="/deputados" class="button">Lista de Deputados</a>
-            <a href="/ranking-redes-sociais-front" class="button">Ranking Redes Sociais</a>
+            <a href="/ranking-redes-sociais" class="button">Ranking Redes Sociais</a>
             <a href="/ranking-reembolsos" class="button">Ranking de Reembolsos</a>
         </div>
     </div>

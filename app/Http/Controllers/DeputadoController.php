@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 class DeputadoController extends Controller
 {
-      /**
+    /**
      * Carrega a lista de deputados da API externa e salva os dados no banco de dados.
      * Também salva as redes sociais associadas aos deputados.
      *
@@ -27,6 +27,7 @@ class DeputadoController extends Controller
                 $dataNascimento = isset($deputado['dataNascimento']) 
                     ? Carbon::createFromFormat('d/m/Y', $deputado['dataNascimento'])->format('Y-m-d') 
                     : null;
+                
                 $sitePessoal = $deputado['sitePessoal'] ?? null;
                 $atividadeProfissional = $deputado['atividadeProfissional'] ?? null;
 
@@ -66,7 +67,6 @@ class DeputadoController extends Controller
             }
 
             return response()->json($deputados);
-            
         }
 
         return response()->json(['error' => 'Erro ao consultar a API'], 500);
@@ -78,972 +78,81 @@ class DeputadoController extends Controller
      * @return \Illuminate\View\View
      */
     public function deputados()
-{
-    // Pega todos os deputados do banco de dados
-    $deputados = Deputado::all(); 
+    {
+        // Pega todos os deputados do banco de dados
+        $deputados = Deputado::all(); 
 
-    // Retorna a view com os dados dos deputados
-    return view('deputados', compact('deputados')); 
-}
-
-    /**
-     * Consulta o total de reembolsos do deputado de ID 4458 no mês de fevereiro de 2019.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-public function totalReembolsadoDeputado4458()
-{
-    $deputadoId = 4458; // ID do deputado
-    $ano = 2019;
-    $mes = 2;  // Fevereiro
-
-    // URL da API para reembolsos
-    $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputadoId}/{$ano}/{$mes}?formato=json";
-    
-    // Realizando a requisição
-    $response = Http::get($url);
-
-    // Verificando se a requisição foi bem-sucedida
-    if ($response->successful()) {
-        $dados = $response->json(); // Pegando os dados da resposta
-
-        // Adicionando log para verificar o que foi retornado
-        \Log::info('Dados da API:', $dados);
-
-        $totalReembolsado = 0;
-
-        // Iterando por cada tipo de despesa (em "list")
-        foreach ($dados['list'] as $item) {
-            // Verificando se 'listaDetalheVerba' está presente
-            if (isset($item['listaDetalheVerba'])) {
-                // Iterando pelos detalhes da verba
-                foreach ($item['listaDetalheVerba'] as $detalhe) {
-                    // Somando o valor reembolsado (garantindo que seja um número inteiro)
-                    $totalReembolsado += (float) $detalhe['valorReembolsado'];
-                }
-            }
-        }
-
-        // Formatando o total reembolsado para o formato monetário
-        $totalReembolsadoFormatted = number_format($totalReembolsado, 2, ',', '.');
-
-        // Retornando o resultado como JSON
-        return response()->json([
-            'deputado_id' => $deputadoId,
-            'total_reembolsado' => "R$ {$totalReembolsadoFormatted}"
-        ]);
+        // Retorna a view com os dados dos deputados
+        return view('deputados', compact('deputados')); 
     }
 
-    // Caso haja erro na requisição, retornamos um erro
-    return response()->json(['error' => 'Erro ao consultar a API de reembolsos'], 500);
-}
-     /**
-     * Calcula e retorna o ranking dos 5 deputados com maiores reembolsos no mês de janeiro de 2019.
+    /**
+     * Retorna o ranking dos 5 deputados com maiores reembolsos em um mês específico.
      *
+     * @param int $mes
      * @return \Illuminate\Http\JsonResponse
      */
-public function rankingReembolsosJaneiro()
-{
-    $mes = 1;  // Janeiro
-    $ano = 2019;
+    public function rankingReembolsos($mes)
+    {
+        $ano = 2019; // Ano fixo para simplificação
 
-    // Log para iniciar o processo
-    \Log::info("Iniciando consulta de reembolsos para o mês de Fevereiro {$ano}");
+        // Valida o mês recebido
+        if ($mes < 1 || $mes > 12) {
+            return response()->json(['error' => 'Mês inválido. Insira um valor entre 1 e 12.'], 400);
+        }
 
-    $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
-        $totalReembolsado = 0;
+        $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
+            $totalReembolsado = 0;
 
-        // Consumindo a API de reembolsos para o mês de Fevereiro para cada deputado
-        $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
-        
-        // Log para verificar a URL da API para cada deputado
-        \Log::info("Consultando reembolsos do deputado ID: {$deputado->id} - URL: {$url}");
-        
-        $response = Http::get($url);
+            // URL da API para o deputado e mês/ano especificados
+            $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
 
-        // Verificando se a requisição foi bem-sucedida
-        if ($response->successful()) {
-            $reembolsos = $response->json()['list'];
+            $response = Http::get($url);
 
-            // Log da resposta da API para o deputado específico
-            \Log::info("Resposta da API para o deputado ID {$deputado->id}:", $reembolsos);
+            if ($response->successful()) {
+                $reembolsos = $response->json()['list'] ?? [];
 
-            // Iterar por cada item de reembolso na lista
-            foreach ($reembolsos as $reembolso) {
-                // Verificando se a chave 'listaDetalheVerba' existe
-                if (isset($reembolso['listaDetalheVerba'])) {
-                    foreach ($reembolso['listaDetalheVerba'] as $detalhe) {
-                        // Log para verificar o valor de cada detalhe de reembolso
-                        \Log::info("Detalhe de reembolso do deputado ID {$deputado->id}: " . json_encode($detalhe));
-
-                        $valorReembolsado = isset($detalhe['valorReembolsado']) ? (float) $detalhe['valorReembolsado'] : 0;
-
-                        // Log para verificar o valor reembolsado de cada detalhe
-                        \Log::info("Valor reembolsado para o deputado ID {$deputado->id}: R$ " . number_format($valorReembolsado, 2, ',', '.'));
-
-                        $totalReembolsado += $valorReembolsado; // Acumulando o valor
+                foreach ($reembolsos as $reembolso) {
+                    if (isset($reembolso['listaDetalheVerba'])) {
+                        foreach ($reembolso['listaDetalheVerba'] as $detalhe) {
+                            $valorReembolsado = (float) ($detalhe['valorReembolsado'] ?? 0);
+                            $totalReembolsado += $valorReembolsado;
+                        }
                     }
                 }
             }
-        } else {
-            // Caso a requisição falhe, logar o erro
-            \Log::error("Erro ao consultar reembolsos do deputado ID {$deputado->id}. Resposta da API: " . $response->body());
-        }
 
-        // Log do total de reembolso calculado para o deputado
-        \Log::info("Total reembolsado pelo deputado ID {$deputado->id}: R$ " . number_format($totalReembolsado, 2, ',', '.'));
+            return [
+                'deputado' => $deputado,
+                'total_reembolsado' => $totalReembolsado,
+            ];
+        });
 
-        // Retorna o deputado com o total de reembolsos
-        return [
-            'deputado' => $deputado,
-            'total_reembolsado' => $totalReembolsado,
-        ];
-    });
+        $topDeputados = $deputadosReembolsos->sortByDesc('total_reembolsado')->take(5);
 
-    // Ordena os deputados pelo total de reembolsos de forma decrescente
-    $topDeputados = $deputadosReembolsos->sortByDesc('total_reembolsado')->take(5);
+        $topDeputadosFormatted = $topDeputados->map(function ($deputadoReembolso) {
+            $deputadoReembolso['total_reembolsado'] = "R$ " . number_format($deputadoReembolso['total_reembolsado'], 2, ',', '.');
+            return $deputadoReembolso;
+        });
 
-    // Log dos 5 deputados com maiores reembolsos
-    \Log::info("Top 5 deputados com maiores reembolsos de Fevereiro {$ano}:", $topDeputados->toArray());
-
-    // Formatar os valores de reembolso para exibição
-    $topDeputadosFormatted = $topDeputados->map(function ($deputadoReembolso) {
-        $deputadoReembolso['total_reembolsado'] = "R$ " . number_format($deputadoReembolso['total_reembolsado'], 2, ',', '.');
-        return $deputadoReembolso;
-    });
-
-    // Retorna o resultado em formato JSON com os 5 deputados com maiores valores reembolsados
-    return response()->json($topDeputadosFormatted);
-}
-
-
-public function rankingReembolsosFevereiro()
-{
-    $mes = 2;  // Fevereiro
-    $ano = 2019;
-
-    // Log para iniciar o processo
-    \Log::info("Iniciando consulta de reembolsos para o mês de Fevereiro {$ano}");
-
-    $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
-        $totalReembolsado = 0;
-
-        // Consumindo a API de reembolsos para o mês de Fevereiro para cada deputado
-        $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
-        
-        // Log para verificar a URL da API para cada deputado
-        \Log::info("Consultando reembolsos do deputado ID: {$deputado->id} - URL: {$url}");
-        
-        $response = Http::get($url);
-
-        // Verificando se a requisição foi bem-sucedida
-        if ($response->successful()) {
-            $reembolsos = $response->json()['list'];
-
-            // Log da resposta da API para o deputado específico
-            \Log::info("Resposta da API para o deputado ID {$deputado->id}:", $reembolsos);
-
-            // Iterar por cada item de reembolso na lista
-            foreach ($reembolsos as $reembolso) {
-                // Verificando se a chave 'listaDetalheVerba' existe
-                if (isset($reembolso['listaDetalheVerba'])) {
-                    foreach ($reembolso['listaDetalheVerba'] as $detalhe) {
-                        // Log para verificar o valor de cada detalhe de reembolso
-                        \Log::info("Detalhe de reembolso do deputado ID {$deputado->id}: " . json_encode($detalhe));
-
-                        $valorReembolsado = isset($detalhe['valorReembolsado']) ? (float) $detalhe['valorReembolsado'] : 0;
-
-                        // Log para verificar o valor reembolsado de cada detalhe
-                        \Log::info("Valor reembolsado para o deputado ID {$deputado->id}: R$ " . number_format($valorReembolsado, 2, ',', '.'));
-
-                        $totalReembolsado += $valorReembolsado; // Acumulando o valor
-                    }
-                }
-            }
-        } else {
-            // Caso a requisição falhe, logar o erro
-            \Log::error("Erro ao consultar reembolsos do deputado ID {$deputado->id}. Resposta da API: " . $response->body());
-        }
-
-        // Log do total de reembolso calculado para o deputado
-        \Log::info("Total reembolsado pelo deputado ID {$deputado->id}: R$ " . number_format($totalReembolsado, 2, ',', '.'));
-
-        // Retorna o deputado com o total de reembolsos
-        return [
-            'deputado' => $deputado,
-            'total_reembolsado' => $totalReembolsado,
-        ];
-    });
-
-    // Ordena os deputados pelo total de reembolsos de forma decrescente
-    $topDeputados = $deputadosReembolsos->sortByDesc('total_reembolsado')->take(5);
-
-    // Log dos 5 deputados com maiores reembolsos
-    \Log::info("Top 5 deputados com maiores reembolsos de Fevereiro {$ano}:", $topDeputados->toArray());
-
-    // Formatar os valores de reembolso para exibição
-    $topDeputadosFormatted = $topDeputados->map(function ($deputadoReembolso) {
-        $deputadoReembolso['total_reembolsado'] = "R$ " . number_format($deputadoReembolso['total_reembolsado'], 2, ',', '.');
-        return $deputadoReembolso;
-    });
-
-    // Retorna o resultado em formato JSON com os 5 deputados com maiores valores reembolsados
-    return response()->json($topDeputadosFormatted);
-}
-
-public function rankingReembolsosMarco ()
-{
-    $mes = 3;  // Marco 
-    $ano = 2019;
-
-    // Log para iniciar o processo
-    \Log::info("Iniciando consulta de reembolsos para o mês de Fevereiro {$ano}");
-
-    $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
-        $totalReembolsado = 0;
-
-        // Consumindo a API de reembolsos para o mês de Fevereiro para cada deputado
-        $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
-        
-        // Log para verificar a URL da API para cada deputado
-        \Log::info("Consultando reembolsos do deputado ID: {$deputado->id} - URL: {$url}");
-        
-        $response = Http::get($url);
-
-        // Verificando se a requisição foi bem-sucedida
-        if ($response->successful()) {
-            $reembolsos = $response->json()['list'];
-
-            // Log da resposta da API para o deputado específico
-            \Log::info("Resposta da API para o deputado ID {$deputado->id}:", $reembolsos);
-
-            // Iterar por cada item de reembolso na lista
-            foreach ($reembolsos as $reembolso) {
-                // Verificando se a chave 'listaDetalheVerba' existe
-                if (isset($reembolso['listaDetalheVerba'])) {
-                    foreach ($reembolso['listaDetalheVerba'] as $detalhe) {
-                        // Log para verificar o valor de cada detalhe de reembolso
-                        \Log::info("Detalhe de reembolso do deputado ID {$deputado->id}: " . json_encode($detalhe));
-
-                        $valorReembolsado = isset($detalhe['valorReembolsado']) ? (float) $detalhe['valorReembolsado'] : 0;
-
-                        // Log para verificar o valor reembolsado de cada detalhe
-                        \Log::info("Valor reembolsado para o deputado ID {$deputado->id}: R$ " . number_format($valorReembolsado, 2, ',', '.'));
-
-                        $totalReembolsado += $valorReembolsado; // Acumulando o valor
-                    }
-                }
-            }
-        } else {
-            // Caso a requisição falhe, logar o erro
-            \Log::error("Erro ao consultar reembolsos do deputado ID {$deputado->id}. Resposta da API: " . $response->body());
-        }
-
-        // Log do total de reembolso calculado para o deputado
-        \Log::info("Total reembolsado pelo deputado ID {$deputado->id}: R$ " . number_format($totalReembolsado, 2, ',', '.'));
-
-        // Retorna o deputado com o total de reembolsos
-        return [
-            'deputado' => $deputado,
-            'total_reembolsado' => $totalReembolsado,
-        ];
-    });
-
-    // Ordena os deputados pelo total de reembolsos de forma decrescente
-    $topDeputados = $deputadosReembolsos->sortByDesc('total_reembolsado')->take(5);
-
-    // Log dos 5 deputados com maiores reembolsos
-    \Log::info("Top 5 deputados com maiores reembolsos de Fevereiro {$ano}:", $topDeputados->toArray());
-
-    // Formatar os valores de reembolso para exibição
-    $topDeputadosFormatted = $topDeputados->map(function ($deputadoReembolso) {
-        $deputadoReembolso['total_reembolsado'] = "R$ " . number_format($deputadoReembolso['total_reembolsado'], 2, ',', '.');
-        return $deputadoReembolso;
-    });
-
-    // Retorna o resultado em formato JSON com os 5 deputados com maiores valores reembolsados
-    return response()->json($topDeputadosFormatted);
-}
-public function rankingReembolsosView()
-{
-    return view('ranking-reembolsos');
-}
-public function rankingReembolsosAbril ()
-{
-    $mes = 4;  // Abril  
-    $ano = 2019;
-
-    // Log para iniciar o processo
-    \Log::info("Iniciando consulta de reembolsos para o mês de Fevereiro {$ano}");
-
-    $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
-        $totalReembolsado = 0;
-
-        // Consumindo a API de reembolsos para o mês de Fevereiro para cada deputado
-        $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
-        
-        // Log para verificar a URL da API para cada deputado
-        \Log::info("Consultando reembolsos do deputado ID: {$deputado->id} - URL: {$url}");
-        
-        $response = Http::get($url);
-
-        // Verificando se a requisição foi bem-sucedida
-        if ($response->successful()) {
-            $reembolsos = $response->json()['list'];
-
-            // Log da resposta da API para o deputado específico
-            \Log::info("Resposta da API para o deputado ID {$deputado->id}:", $reembolsos);
-
-            // Iterar por cada item de reembolso na lista
-            foreach ($reembolsos as $reembolso) {
-                // Verificando se a chave 'listaDetalheVerba' existe
-                if (isset($reembolso['listaDetalheVerba'])) {
-                    foreach ($reembolso['listaDetalheVerba'] as $detalhe) {
-                        // Log para verificar o valor de cada detalhe de reembolso
-                        \Log::info("Detalhe de reembolso do deputado ID {$deputado->id}: " . json_encode($detalhe));
-
-                        $valorReembolsado = isset($detalhe['valorReembolsado']) ? (float) $detalhe['valorReembolsado'] : 0;
-
-                        // Log para verificar o valor reembolsado de cada detalhe
-                        \Log::info("Valor reembolsado para o deputado ID {$deputado->id}: R$ " . number_format($valorReembolsado, 2, ',', '.'));
-
-                        $totalReembolsado += $valorReembolsado; // Acumulando o valor
-                    }
-                }
-            }
-        } else {
-            // Caso a requisição falhe, logar o erro
-            \Log::error("Erro ao consultar reembolsos do deputado ID {$deputado->id}. Resposta da API: " . $response->body());
-        }
-
-        // Log do total de reembolso calculado para o deputado
-        \Log::info("Total reembolsado pelo deputado ID {$deputado->id}: R$ " . number_format($totalReembolsado, 2, ',', '.'));
-
-        // Retorna o deputado com o total de reembolsos
-        return [
-            'deputado' => $deputado,
-            'total_reembolsado' => $totalReembolsado,
-        ];
-    });
-
-    // Ordena os deputados pelo total de reembolsos de forma decrescente
-    $topDeputados = $deputadosReembolsos->sortByDesc('total_reembolsado')->take(5);
-
-    // Log dos 5 deputados com maiores reembolsos
-    \Log::info("Top 5 deputados com maiores reembolsos de Fevereiro {$ano}:", $topDeputados->toArray());
-
-    // Formatar os valores de reembolso para exibição
-    $topDeputadosFormatted = $topDeputados->map(function ($deputadoReembolso) {
-        $deputadoReembolso['total_reembolsado'] = "R$ " . number_format($deputadoReembolso['total_reembolsado'], 2, ',', '.');
-        return $deputadoReembolso;
-    });
-
-    // Retorna o resultado em formato JSON com os 5 deputados com maiores valores reembolsados
-    return response()->json($topDeputadosFormatted);
-}
-
-public function rankingReembolsosMaio ()
-{
-    $mes = 5;  // Maio  
-    $ano = 2019;
-
-    // Log para iniciar o processo
-    \Log::info("Iniciando consulta de reembolsos para o mês de Fevereiro {$ano}");
-
-    $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
-        $totalReembolsado = 0;
-
-        // Consumindo a API de reembolsos para o mês de Fevereiro para cada deputado
-        $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
-        
-        // Log para verificar a URL da API para cada deputado
-        \Log::info("Consultando reembolsos do deputado ID: {$deputado->id} - URL: {$url}");
-        
-        $response = Http::get($url);
-
-        // Verificando se a requisição foi bem-sucedida
-        if ($response->successful()) {
-            $reembolsos = $response->json()['list'];
-
-            // Log da resposta da API para o deputado específico
-            \Log::info("Resposta da API para o deputado ID {$deputado->id}:", $reembolsos);
-
-            // Iterar por cada item de reembolso na lista
-            foreach ($reembolsos as $reembolso) {
-                // Verificando se a chave 'listaDetalheVerba' existe
-                if (isset($reembolso['listaDetalheVerba'])) {
-                    foreach ($reembolso['listaDetalheVerba'] as $detalhe) {
-                        // Log para verificar o valor de cada detalhe de reembolso
-                        \Log::info("Detalhe de reembolso do deputado ID {$deputado->id}: " . json_encode($detalhe));
-
-                        $valorReembolsado = isset($detalhe['valorReembolsado']) ? (float) $detalhe['valorReembolsado'] : 0;
-
-                        // Log para verificar o valor reembolsado de cada detalhe
-                        \Log::info("Valor reembolsado para o deputado ID {$deputado->id}: R$ " . number_format($valorReembolsado, 2, ',', '.'));
-
-                        $totalReembolsado += $valorReembolsado; // Acumulando o valor
-                    }
-                }
-            }
-        } else {
-            // Caso a requisição falhe, logar o erro
-            \Log::error("Erro ao consultar reembolsos do deputado ID {$deputado->id}. Resposta da API: " . $response->body());
-        }
-
-        // Log do total de reembolso calculado para o deputado
-        \Log::info("Total reembolsado pelo deputado ID {$deputado->id}: R$ " . number_format($totalReembolsado, 2, ',', '.'));
-
-        // Retorna o deputado com o total de reembolsos
-        return [
-            'deputado' => $deputado,
-            'total_reembolsado' => $totalReembolsado,
-        ];
-    });
-
-    // Ordena os deputados pelo total de reembolsos de forma decrescente
-    $topDeputados = $deputadosReembolsos->sortByDesc('total_reembolsado')->take(5);
-
-    // Log dos 5 deputados com maiores reembolsos
-    \Log::info("Top 5 deputados com maiores reembolsos de Fevereiro {$ano}:", $topDeputados->toArray());
-
-    // Formatar os valores de reembolso para exibição
-    $topDeputadosFormatted = $topDeputados->map(function ($deputadoReembolso) {
-        $deputadoReembolso['total_reembolsado'] = "R$ " . number_format($deputadoReembolso['total_reembolsado'], 2, ',', '.');
-        return $deputadoReembolso;
-    });
-
-    // Retorna o resultado em formato JSON com os 5 deputados com maiores valores reembolsados
-    return response()->json($topDeputadosFormatted);
-}
-
-public function rankingReembolsosJunho ()
-{
-    $mes = 6;  // Junho  
-    $ano = 2019;
-
-    // Log para iniciar o processo
-    \Log::info("Iniciando consulta de reembolsos para o mês de Fevereiro {$ano}");
-
-    $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
-        $totalReembolsado = 0;
-
-        // Consumindo a API de reembolsos para o mês de Fevereiro para cada deputado
-        $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
-        
-        // Log para verificar a URL da API para cada deputado
-        \Log::info("Consultando reembolsos do deputado ID: {$deputado->id} - URL: {$url}");
-        
-        $response = Http::get($url);
-
-        // Verificando se a requisição foi bem-sucedida
-        if ($response->successful()) {
-            $reembolsos = $response->json()['list'];
-
-            // Log da resposta da API para o deputado específico
-            \Log::info("Resposta da API para o deputado ID {$deputado->id}:", $reembolsos);
-
-            // Iterar por cada item de reembolso na lista
-            foreach ($reembolsos as $reembolso) {
-                // Verificando se a chave 'listaDetalheVerba' existe
-                if (isset($reembolso['listaDetalheVerba'])) {
-                    foreach ($reembolso['listaDetalheVerba'] as $detalhe) {
-                        // Log para verificar o valor de cada detalhe de reembolso
-                        \Log::info("Detalhe de reembolso do deputado ID {$deputado->id}: " . json_encode($detalhe));
-
-                        $valorReembolsado = isset($detalhe['valorReembolsado']) ? (float) $detalhe['valorReembolsado'] : 0;
-
-                        // Log para verificar o valor reembolsado de cada detalhe
-                        \Log::info("Valor reembolsado para o deputado ID {$deputado->id}: R$ " . number_format($valorReembolsado, 2, ',', '.'));
-
-                        $totalReembolsado += $valorReembolsado; // Acumulando o valor
-                    }
-                }
-            }
-        } else {
-            // Caso a requisição falhe, logar o erro
-            \Log::error("Erro ao consultar reembolsos do deputado ID {$deputado->id}. Resposta da API: " . $response->body());
-        }
-
-        // Log do total de reembolso calculado para o deputado
-        \Log::info("Total reembolsado pelo deputado ID {$deputado->id}: R$ " . number_format($totalReembolsado, 2, ',', '.'));
-
-        // Retorna o deputado com o total de reembolsos
-        return [
-            'deputado' => $deputado,
-            'total_reembolsado' => $totalReembolsado,
-        ];
-    });
-
-    // Ordena os deputados pelo total de reembolsos de forma decrescente
-    $topDeputados = $deputadosReembolsos->sortByDesc('total_reembolsado')->take(5);
-
-    // Log dos 5 deputados com maiores reembolsos
-    \Log::info("Top 5 deputados com maiores reembolsos de Fevereiro {$ano}:", $topDeputados->toArray());
-
-    // Formatar os valores de reembolso para exibição
-    $topDeputadosFormatted = $topDeputados->map(function ($deputadoReembolso) {
-        $deputadoReembolso['total_reembolsado'] = "R$ " . number_format($deputadoReembolso['total_reembolsado'], 2, ',', '.');
-        return $deputadoReembolso;
-    });
-
-    // Retorna o resultado em formato JSON com os 5 deputados com maiores valores reembolsados
-    return response()->json($topDeputadosFormatted);
-}
-
-public function rankingReembolsosJulho ()
-{
-    $mes = 7;  // Julho  
-    $ano = 2019;
-
-    // Log para iniciar o processo
-    \Log::info("Iniciando consulta de reembolsos para o mês de Fevereiro {$ano}");
-
-    $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
-        $totalReembolsado = 0;
-
-        // Consumindo a API de reembolsos para o mês de Fevereiro para cada deputado
-        $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
-        
-        // Log para verificar a URL da API para cada deputado
-        \Log::info("Consultando reembolsos do deputado ID: {$deputado->id} - URL: {$url}");
-        
-        $response = Http::get($url);
-
-        // Verificando se a requisição foi bem-sucedida
-        if ($response->successful()) {
-            $reembolsos = $response->json()['list'];
-
-            // Log da resposta da API para o deputado específico
-            \Log::info("Resposta da API para o deputado ID {$deputado->id}:", $reembolsos);
-
-            // Iterar por cada item de reembolso na lista
-            foreach ($reembolsos as $reembolso) {
-                // Verificando se a chave 'listaDetalheVerba' existe
-                if (isset($reembolso['listaDetalheVerba'])) {
-                    foreach ($reembolso['listaDetalheVerba'] as $detalhe) {
-                        // Log para verificar o valor de cada detalhe de reembolso
-                        \Log::info("Detalhe de reembolso do deputado ID {$deputado->id}: " . json_encode($detalhe));
-
-                        $valorReembolsado = isset($detalhe['valorReembolsado']) ? (float) $detalhe['valorReembolsado'] : 0;
-
-                        // Log para verificar o valor reembolsado de cada detalhe
-                        \Log::info("Valor reembolsado para o deputado ID {$deputado->id}: R$ " . number_format($valorReembolsado, 2, ',', '.'));
-
-                        $totalReembolsado += $valorReembolsado; // Acumulando o valor
-                    }
-                }
-            }
-        } else {
-            // Caso a requisição falhe, logar o erro
-            \Log::error("Erro ao consultar reembolsos do deputado ID {$deputado->id}. Resposta da API: " . $response->body());
-        }
-
-        // Log do total de reembolso calculado para o deputado
-        \Log::info("Total reembolsado pelo deputado ID {$deputado->id}: R$ " . number_format($totalReembolsado, 2, ',', '.'));
-
-        // Retorna o deputado com o total de reembolsos
-        return [
-            'deputado' => $deputado,
-            'total_reembolsado' => $totalReembolsado,
-        ];
-    });
-
-    // Ordena os deputados pelo total de reembolsos de forma decrescente
-    $topDeputados = $deputadosReembolsos->sortByDesc('total_reembolsado')->take(5);
-
-    // Log dos 5 deputados com maiores reembolsos
-    \Log::info("Top 5 deputados com maiores reembolsos de Fevereiro {$ano}:", $topDeputados->toArray());
-
-    // Formatar os valores de reembolso para exibição
-    $topDeputadosFormatted = $topDeputados->map(function ($deputadoReembolso) {
-        $deputadoReembolso['total_reembolsado'] = "R$ " . number_format($deputadoReembolso['total_reembolsado'], 2, ',', '.');
-        return $deputadoReembolso;
-    });
-
-    // Retorna o resultado em formato JSON com os 5 deputados com maiores valores reembolsados
-    return response()->json($topDeputadosFormatted);
-}
-
-public function rankingReembolsosAgosto ()
-{
-    $mes = 8;  // Agosto  
-    $ano = 2019;
-
-    // Log para iniciar o processo
-    \Log::info("Iniciando consulta de reembolsos para o mês de Fevereiro {$ano}");
-
-    $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
-        $totalReembolsado = 0;
-
-        // Consumindo a API de reembolsos para o mês de Fevereiro para cada deputado
-        $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
-        
-        // Log para verificar a URL da API para cada deputado
-        \Log::info("Consultando reembolsos do deputado ID: {$deputado->id} - URL: {$url}");
-        
-        $response = Http::get($url);
-
-        // Verificando se a requisição foi bem-sucedida
-        if ($response->successful()) {
-            $reembolsos = $response->json()['list'];
-
-            // Log da resposta da API para o deputado específico
-            \Log::info("Resposta da API para o deputado ID {$deputado->id}:", $reembolsos);
-
-            // Iterar por cada item de reembolso na lista
-            foreach ($reembolsos as $reembolso) {
-                // Verificando se a chave 'listaDetalheVerba' existe
-                if (isset($reembolso['listaDetalheVerba'])) {
-                    foreach ($reembolso['listaDetalheVerba'] as $detalhe) {
-                        // Log para verificar o valor de cada detalhe de reembolso
-                        \Log::info("Detalhe de reembolso do deputado ID {$deputado->id}: " . json_encode($detalhe));
-
-                        $valorReembolsado = isset($detalhe['valorReembolsado']) ? (float) $detalhe['valorReembolsado'] : 0;
-
-                        // Log para verificar o valor reembolsado de cada detalhe
-                        \Log::info("Valor reembolsado para o deputado ID {$deputado->id}: R$ " . number_format($valorReembolsado, 2, ',', '.'));
-
-                        $totalReembolsado += $valorReembolsado; // Acumulando o valor
-                    }
-                }
-            }
-        } else {
-            // Caso a requisição falhe, logar o erro
-            \Log::error("Erro ao consultar reembolsos do deputado ID {$deputado->id}. Resposta da API: " . $response->body());
-        }
-
-        // Log do total de reembolso calculado para o deputado
-        \Log::info("Total reembolsado pelo deputado ID {$deputado->id}: R$ " . number_format($totalReembolsado, 2, ',', '.'));
-
-        // Retorna o deputado com o total de reembolsos
-        return [
-            'deputado' => $deputado,
-            'total_reembolsado' => $totalReembolsado,
-        ];
-    });
-
-    // Ordena os deputados pelo total de reembolsos de forma decrescente
-    $topDeputados = $deputadosReembolsos->sortByDesc('total_reembolsado')->take(5);
-
-    // Log dos 5 deputados com maiores reembolsos
-    \Log::info("Top 5 deputados com maiores reembolsos de Fevereiro {$ano}:", $topDeputados->toArray());
-
-    // Formatar os valores de reembolso para exibição
-    $topDeputadosFormatted = $topDeputados->map(function ($deputadoReembolso) {
-        $deputadoReembolso['total_reembolsado'] = "R$ " . number_format($deputadoReembolso['total_reembolsado'], 2, ',', '.');
-        return $deputadoReembolso;
-    });
-
-    // Retorna o resultado em formato JSON com os 5 deputados com maiores valores reembolsados
-    return response()->json($topDeputadosFormatted);
-}
-
-
-public function rankingReembolsosSetembro ()
-{
-    $mes = 9;  // Setembro  
-    $ano = 2019;
-
-    // Log para iniciar o processo
-    \Log::info("Iniciando consulta de reembolsos para o mês de Fevereiro {$ano}");
-
-    $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
-        $totalReembolsado = 0;
-
-        // Consumindo a API de reembolsos para o mês de Fevereiro para cada deputado
-        $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
-        
-        // Log para verificar a URL da API para cada deputado
-        \Log::info("Consultando reembolsos do deputado ID: {$deputado->id} - URL: {$url}");
-        
-        $response = Http::get($url);
-
-        // Verificando se a requisição foi bem-sucedida
-        if ($response->successful()) {
-            $reembolsos = $response->json()['list'];
-
-            // Log da resposta da API para o deputado específico
-            \Log::info("Resposta da API para o deputado ID {$deputado->id}:", $reembolsos);
-
-            // Iterar por cada item de reembolso na lista
-            foreach ($reembolsos as $reembolso) {
-                // Verificando se a chave 'listaDetalheVerba' existe
-                if (isset($reembolso['listaDetalheVerba'])) {
-                    foreach ($reembolso['listaDetalheVerba'] as $detalhe) {
-                        // Log para verificar o valor de cada detalhe de reembolso
-                        \Log::info("Detalhe de reembolso do deputado ID {$deputado->id}: " . json_encode($detalhe));
-
-                        $valorReembolsado = isset($detalhe['valorReembolsado']) ? (float) $detalhe['valorReembolsado'] : 0;
-
-                        // Log para verificar o valor reembolsado de cada detalhe
-                        \Log::info("Valor reembolsado para o deputado ID {$deputado->id}: R$ " . number_format($valorReembolsado, 2, ',', '.'));
-
-                        $totalReembolsado += $valorReembolsado; // Acumulando o valor
-                    }
-                }
-            }
-        } else {
-            // Caso a requisição falhe, logar o erro
-            \Log::error("Erro ao consultar reembolsos do deputado ID {$deputado->id}. Resposta da API: " . $response->body());
-        }
-
-        // Log do total de reembolso calculado para o deputado
-        \Log::info("Total reembolsado pelo deputado ID {$deputado->id}: R$ " . number_format($totalReembolsado, 2, ',', '.'));
-
-        // Retorna o deputado com o total de reembolsos
-        return [
-            'deputado' => $deputado,
-            'total_reembolsado' => $totalReembolsado,
-        ];
-    });
-
-    // Ordena os deputados pelo total de reembolsos de forma decrescente
-    $topDeputados = $deputadosReembolsos->sortByDesc('total_reembolsado')->take(5);
-
-    // Log dos 5 deputados com maiores reembolsos
-    \Log::info("Top 5 deputados com maiores reembolsos de Fevereiro {$ano}:", $topDeputados->toArray());
-
-    // Formatar os valores de reembolso para exibição
-    $topDeputadosFormatted = $topDeputados->map(function ($deputadoReembolso) {
-        $deputadoReembolso['total_reembolsado'] = "R$ " . number_format($deputadoReembolso['total_reembolsado'], 2, ',', '.');
-        return $deputadoReembolso;
-    });
-
-    // Retorna o resultado em formato JSON com os 5 deputados com maiores valores reembolsados
-    return response()->json($topDeputadosFormatted);
-}
-
-
-public function rankingReembolsosOutubro ()
-{
-    $mes = 10;  // Outubro  
-    $ano = 2019;
-
-    // Log para iniciar o processo
-    \Log::info("Iniciando consulta de reembolsos para o mês de Fevereiro {$ano}");
-
-    $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
-        $totalReembolsado = 0;
-
-        // Consumindo a API de reembolsos para o mês de Fevereiro para cada deputado
-        $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
-        
-        // Log para verificar a URL da API para cada deputado
-        \Log::info("Consultando reembolsos do deputado ID: {$deputado->id} - URL: {$url}");
-        
-        $response = Http::get($url);
-
-        // Verificando se a requisição foi bem-sucedida
-        if ($response->successful()) {
-            $reembolsos = $response->json()['list'];
-
-            // Log da resposta da API para o deputado específico
-            \Log::info("Resposta da API para o deputado ID {$deputado->id}:", $reembolsos);
-
-            // Iterar por cada item de reembolso na lista
-            foreach ($reembolsos as $reembolso) {
-                // Verificando se a chave 'listaDetalheVerba' existe
-                if (isset($reembolso['listaDetalheVerba'])) {
-                    foreach ($reembolso['listaDetalheVerba'] as $detalhe) {
-                        // Log para verificar o valor de cada detalhe de reembolso
-                        \Log::info("Detalhe de reembolso do deputado ID {$deputado->id}: " . json_encode($detalhe));
-
-                        $valorReembolsado = isset($detalhe['valorReembolsado']) ? (float) $detalhe['valorReembolsado'] : 0;
-
-                        // Log para verificar o valor reembolsado de cada detalhe
-                        \Log::info("Valor reembolsado para o deputado ID {$deputado->id}: R$ " . number_format($valorReembolsado, 2, ',', '.'));
-
-                        $totalReembolsado += $valorReembolsado; // Acumulando o valor
-                    }
-                }
-            }
-        } else {
-            // Caso a requisição falhe, logar o erro
-            \Log::error("Erro ao consultar reembolsos do deputado ID {$deputado->id}. Resposta da API: " . $response->body());
-        }
-
-        // Log do total de reembolso calculado para o deputado
-        \Log::info("Total reembolsado pelo deputado ID {$deputado->id}: R$ " . number_format($totalReembolsado, 2, ',', '.'));
-
-        // Retorna o deputado com o total de reembolsos
-        return [
-            'deputado' => $deputado,
-            'total_reembolsado' => $totalReembolsado,
-        ];
-    });
-
-    // Ordena os deputados pelo total de reembolsos de forma decrescente
-    $topDeputados = $deputadosReembolsos->sortByDesc('total_reembolsado')->take(5);
-
-    // Log dos 5 deputados com maiores reembolsos
-    \Log::info("Top 5 deputados com maiores reembolsos de Fevereiro {$ano}:", $topDeputados->toArray());
-
-    // Formatar os valores de reembolso para exibição
-    $topDeputadosFormatted = $topDeputados->map(function ($deputadoReembolso) {
-        $deputadoReembolso['total_reembolsado'] = "R$ " . number_format($deputadoReembolso['total_reembolsado'], 2, ',', '.');
-        return $deputadoReembolso;
-    });
-
-    // Retorna o resultado em formato JSON com os 5 deputados com maiores valores reembolsados
-    return response()->json($topDeputadosFormatted);
-}
-
-public function rankingReembolsosNovembro ()
-{
-    $mes = 11;  // Novembro  
-    $ano = 2019;
-
-    // Log para iniciar o processo
-    \Log::info("Iniciando consulta de reembolsos para o mês de Fevereiro {$ano}");
-
-    $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
-        $totalReembolsado = 0;
-
-        // Consumindo a API de reembolsos para o mês de Fevereiro para cada deputado
-        $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
-        
-        // Log para verificar a URL da API para cada deputado
-        \Log::info("Consultando reembolsos do deputado ID: {$deputado->id} - URL: {$url}");
-        
-        $response = Http::get($url);
-
-        // Verificando se a requisição foi bem-sucedida
-        if ($response->successful()) {
-            $reembolsos = $response->json()['list'];
-
-            // Log da resposta da API para o deputado específico
-            \Log::info("Resposta da API para o deputado ID {$deputado->id}:", $reembolsos);
-
-            // Iterar por cada item de reembolso na lista
-            foreach ($reembolsos as $reembolso) {
-                // Verificando se a chave 'listaDetalheVerba' existe
-                if (isset($reembolso['listaDetalheVerba'])) {
-                    foreach ($reembolso['listaDetalheVerba'] as $detalhe) {
-                        // Log para verificar o valor de cada detalhe de reembolso
-                        \Log::info("Detalhe de reembolso do deputado ID {$deputado->id}: " . json_encode($detalhe));
-
-                        $valorReembolsado = isset($detalhe['valorReembolsado']) ? (float) $detalhe['valorReembolsado'] : 0;
-
-                        // Log para verificar o valor reembolsado de cada detalhe
-                        \Log::info("Valor reembolsado para o deputado ID {$deputado->id}: R$ " . number_format($valorReembolsado, 2, ',', '.'));
-
-                        $totalReembolsado += $valorReembolsado; // Acumulando o valor
-                    }
-                }
-            }
-        } else {
-            // Caso a requisição falhe, logar o erro
-            \Log::error("Erro ao consultar reembolsos do deputado ID {$deputado->id}. Resposta da API: " . $response->body());
-        }
-
-        // Log do total de reembolso calculado para o deputado
-        \Log::info("Total reembolsado pelo deputado ID {$deputado->id}: R$ " . number_format($totalReembolsado, 2, ',', '.'));
-
-        // Retorna o deputado com o total de reembolsos
-        return [
-            'deputado' => $deputado,
-            'total_reembolsado' => $totalReembolsado,
-        ];
-    });
-
-    // Ordena os deputados pelo total de reembolsos de forma decrescente
-    $topDeputados = $deputadosReembolsos->sortByDesc('total_reembolsado')->take(5);
-
-    // Log dos 5 deputados com maiores reembolsos
-    \Log::info("Top 5 deputados com maiores reembolsos de Fevereiro {$ano}:", $topDeputados->toArray());
-
-    // Formatar os valores de reembolso para exibição
-    $topDeputadosFormatted = $topDeputados->map(function ($deputadoReembolso) {
-        $deputadoReembolso['total_reembolsado'] = "R$ " . number_format($deputadoReembolso['total_reembolsado'], 2, ',', '.');
-        return $deputadoReembolso;
-    });
-
-    // Retorna o resultado em formato JSON com os 5 deputados com maiores valores reembolsados
-    return response()->json($topDeputadosFormatted);
-}
-
-public function rankingReembolsosDezembro ()
-{
-    $mes = 12;  // Dezembro  
-    $ano = 2019;
-
-    // Log para iniciar o processo
-    \Log::info("Iniciando consulta de reembolsos para o mês de Fevereiro {$ano}");
-
-    $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
-        $totalReembolsado = 0;
-
-        // Consumindo a API de reembolsos para o mês de Fevereiro para cada deputado
-        $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
-        
-        // Log para verificar a URL da API para cada deputado
-        \Log::info("Consultando reembolsos do deputado ID: {$deputado->id} - URL: {$url}");
-        
-        $response = Http::get($url);
-
-        // Verificando se a requisição foi bem-sucedida
-        if ($response->successful()) {
-            $reembolsos = $response->json()['list'];
-
-            // Log da resposta da API para o deputado específico
-            \Log::info("Resposta da API para o deputado ID {$deputado->id}:", $reembolsos);
-
-            // Iterar por cada item de reembolso na lista
-            foreach ($reembolsos as $reembolso) {
-                // Verificando se a chave 'listaDetalheVerba' existe
-                if (isset($reembolso['listaDetalheVerba'])) {
-                    foreach ($reembolso['listaDetalheVerba'] as $detalhe) {
-                        // Log para verificar o valor de cada detalhe de reembolso
-                        \Log::info("Detalhe de reembolso do deputado ID {$deputado->id}: " . json_encode($detalhe));
-
-                        $valorReembolsado = isset($detalhe['valorReembolsado']) ? (float) $detalhe['valorReembolsado'] : 0;
-
-                        // Log para verificar o valor reembolsado de cada detalhe
-                        \Log::info("Valor reembolsado para o deputado ID {$deputado->id}: R$ " . number_format($valorReembolsado, 2, ',', '.'));
-
-                        $totalReembolsado += $valorReembolsado; // Acumulando o valor
-                    }
-                }
-            }
-        } else {
-            // Caso a requisição falhe, logar o erro
-            \Log::error("Erro ao consultar reembolsos do deputado ID {$deputado->id}. Resposta da API: " . $response->body());
-        }
-
-        // Log do total de reembolso calculado para o deputado
-        \Log::info("Total reembolsado pelo deputado ID {$deputado->id}: R$ " . number_format($totalReembolsado, 2, ',', '.'));
-
-        // Retorna o deputado com o total de reembolsos
-        return [
-            'deputado' => $deputado,
-            'total_reembolsado' => $totalReembolsado,
-        ];
-    });
-
-    // Ordena os deputados pelo total de reembolsos de forma decrescente
-    $topDeputados = $deputadosReembolsos->sortByDesc('total_reembolsado')->take(5);
-
-    // Log dos 5 deputados com maiores reembolsos
-    \Log::info("Top 5 deputados com maiores reembolsos de Fevereiro {$ano}:", $topDeputados->toArray());
-
-    // Formatar os valores de reembolso para exibição
-    $topDeputadosFormatted = $topDeputados->map(function ($deputadoReembolso) {
-        $deputadoReembolso['total_reembolsado'] = "R$ " . number_format($deputadoReembolso['total_reembolsado'], 2, ',', '.');
-        return $deputadoReembolso;
-    });
-
-    // Retorna o resultado em formato JSON com os 5 deputados com maiores valores reembolsados
-    return response()->json($topDeputadosFormatted);
-}
-
+        return response()->json($topDeputadosFormatted);
+    }
 
     /**
-     * Calcula e retorna o ranking das redes sociais mais utilizadas pelos deputados.
-     * O cálculo é feito com base na contagem de deputados que possuem uma conta em cada rede social.
-     *
-     * @return \Illuminate\Http\JsonResponse JSON contendo o ranking das redes sociais.
+     * Retorna a view do ranking de reembolsos.
      */
-    public function rankingRedesSociais()
+    public function rankingReembolsosView()
+    {
+        return view('ranking-reembolsos');
+    }
+
+    /**
+     * Calcula o ranking das redes sociais mais utilizadas pelos deputados.
+     *
+     * @param bool $returnJson Indica se o resultado deve ser retornado como JSON.
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\View\View JSON ou View dependendo do uso.
+     */
+    public function rankingRedesSociais($returnJson = true)
     {
         // Consulta para contar o número de deputados em cada rede social
         $redesSociais = RedeSocial::join('deputados', 'rede_sociais.deputado_id', '=', 'deputados.id')
@@ -1052,27 +161,12 @@ public function rankingReembolsosDezembro ()
             ->orderByDesc('total') // Ordena de forma decrescente pelo número de deputados
             ->get();
 
-        return response()->json($redesSociais);
+        if ($returnJson) {
+            // Retorna os dados como JSON
+            return response()->json($redesSociais);
+        }
+
+        // Retorna a view com os dados do ranking
+        return view('ranking-redes-sociais', ['redesSociais' => $redesSociais]);
     }
-    /**
-     * Método para retornar o ranking das redes sociais como JSON.
-     * Esse método pode ser usado para integrar os dados do ranking com o frontend.
-     *
-     * @return \Illuminate\Http\JsonResponse JSON contendo o ranking das redes sociais.
-     */
-    public function rankingRedesSociaisFront()
-{
-    $redesSociais = RedeSocial::join('deputados', 'rede_sociais.deputado_id', '=', 'deputados.id')
-        ->groupBy('rede_sociais.nome')
-        ->selectRaw('count(rede_sociais.deputado_id) as total, rede_sociais.nome')
-        ->orderByDesc('total')
-        ->get();
-
-    return response()->json($redesSociais); // Retorna os dados como JSON
-}
-
-    public function rankingRedesSociaisView()
-{
-    return view('ranking-redes-sociais'); // Retorna a view com o ranking
-}
 }

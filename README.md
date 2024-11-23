@@ -46,10 +46,10 @@ A plataforma também oferece insights sobre o impacto das redes sociais na divul
 
 2. **Endpoints Criados:**
    - **Top 5 Deputados Gastadores (2019):**
-     - Endpoint: `/ranking-reembolsos-{mês}`
+     - Endpoint: `/ranking-reembolsos/{mês}`
      - Retorna o ranking mensal de deputados que mais solicitaram reembolsos.
    - **Ranking de Redes Sociais:**
-     - Endpoint: `/api/ranking-redes-sociais`
+     - Endpoint: `/ranking-redes-sociais`
      - Retorna o uso das redes sociais por deputados, ordenado por frequência de uso.
 
 

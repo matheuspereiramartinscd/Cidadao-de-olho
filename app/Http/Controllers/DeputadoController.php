@@ -10,6 +10,8 @@ use Carbon\Carbon;
 
 class DeputadoController extends Controller
 {
+
+
     /**
      * Carrega a lista de deputados da API externa e salva os dados no banco de dados.
      * Também salva as redes sociais associadas aos deputados.
@@ -19,19 +21,18 @@ class DeputadoController extends Controller
     public function getDeputados()
     {
         $response = Http::get('https://dadosabertos.almg.gov.br/ws/deputados/lista_telefonica?formato=json');
-        
+
         if ($response->successful()) {
             $deputados = $response->json()['list'];
-            
+
             foreach ($deputados as $deputado) {
-                $dataNascimento = isset($deputado['dataNascimento']) 
-                    ? Carbon::createFromFormat('d/m/Y', $deputado['dataNascimento'])->format('Y-m-d') 
+                $dataNascimento = isset($deputado['dataNascimento'])
+                    ? Carbon::createFromFormat('d/m/Y', $deputado['dataNascimento'])->format('Y-m-d')
                     : null;
-                
+
                 $sitePessoal = $deputado['sitePessoal'] ?? null;
                 $atividadeProfissional = $deputado['atividadeProfissional'] ?? null;
 
-                // Salvar ou atualizar o deputado
                 $savedDeputado = Deputado::updateOrCreate(
                     ['id' => $deputado['id']],
                     [
@@ -49,17 +50,16 @@ class DeputadoController extends Controller
                         'dataNascimento' => $dataNascimento,
                     ]
                 );
-                
-                // Salvar as redes sociais, se existirem
+
                 if (isset($deputado['redesSociais'])) {
                     foreach ($deputado['redesSociais'] as $redeSocial) {
                         RedeSocial::updateOrCreate(
                             [
                                 'deputado_id' => $savedDeputado->id,
-                                'nome' => $redeSocial['redeSocial']['nome']
+                                'nome' => $redeSocial['redeSocial']['nome'],
                             ],
                             [
-                                'url' => $redeSocial['url']
+                                'url' => $redeSocial['url'],
                             ]
                         );
                     }
@@ -72,6 +72,9 @@ class DeputadoController extends Controller
         return response()->json(['error' => 'Erro ao consultar a API'], 500);
     }
 
+
+
+
     /**
      * Retorna a lista de todos os deputados salvos no banco de dados.
      *
@@ -79,12 +82,12 @@ class DeputadoController extends Controller
      */
     public function deputados()
     {
-        // Pega todos os deputados do banco de dados
-        $deputados = Deputado::all(); 
-
-        // Retorna a view com os dados dos deputados
-        return view('deputados', compact('deputados')); 
+        $deputados = Deputado::all();
+        return view('deputados', compact('deputados'));
     }
+
+
+
 
     /**
      * Retorna o ranking dos 5 deputados com maiores reembolsos em um mês específico.
@@ -94,9 +97,8 @@ class DeputadoController extends Controller
      */
     public function rankingReembolsos($mes)
     {
-        $ano = 2019; // Ano fixo para simplificação
+        $ano = 2019;
 
-        // Valida o mês recebido
         if ($mes < 1 || $mes > 12) {
             return response()->json(['error' => 'Mês inválido. Insira um valor entre 1 e 12.'], 400);
         }
@@ -104,7 +106,6 @@ class DeputadoController extends Controller
         $deputadosReembolsos = Deputado::all()->map(function ($deputado) use ($mes, $ano) {
             $totalReembolsado = 0;
 
-            // URL da API para o deputado e mês/ano especificados
             $url = "https://dadosabertos.almg.gov.br/ws/prestacao_contas/verbas_indenizatorias/deputados/{$deputado->id}/{$ano}/{$mes}?formato=json";
 
             $response = Http::get($url);
@@ -138,6 +139,9 @@ class DeputadoController extends Controller
         return response()->json($topDeputadosFormatted);
     }
 
+
+
+
     /**
      * Retorna a view do ranking de reembolsos.
      */
@@ -146,6 +150,10 @@ class DeputadoController extends Controller
         return view('ranking-reembolsos');
     }
 
+
+
+
+    
     /**
      * Calcula o ranking das redes sociais mais utilizadas pelos deputados.
      *
@@ -154,19 +162,16 @@ class DeputadoController extends Controller
      */
     public function rankingRedesSociais($returnJson = true)
     {
-        // Consulta para contar o número de deputados em cada rede social
         $redesSociais = RedeSocial::join('deputados', 'rede_sociais.deputado_id', '=', 'deputados.id')
-            ->groupBy('rede_sociais.nome') // Agrupar pelo nome da rede social
+            ->groupBy('rede_sociais.nome')
             ->selectRaw('count(rede_sociais.deputado_id) as total, rede_sociais.nome')
-            ->orderByDesc('total') // Ordena de forma decrescente pelo número de deputados
+            ->orderByDesc('total')
             ->get();
 
         if ($returnJson) {
-            // Retorna os dados como JSON
             return response()->json($redesSociais);
         }
 
-        // Retorna a view com os dados do ranking
         return view('ranking-redes-sociais', ['redesSociais' => $redesSociais]);
     }
 }

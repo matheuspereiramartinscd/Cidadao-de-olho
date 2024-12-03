@@ -1,6 +1,6 @@
 # Cidadão de Olho - Plataforma de Monitoramento de Gastos Públicos
 
-Este projeto é uma **prova de conceito** desenvolvida para atender à necessidade de monitorar os gastos públicos em verbas indenizatórias na Assembleia Legislativa de Minas Gerais (ALMG). O objetivo é facilitar o acesso a dados sobre o uso de recursos pelos deputados estaduais e proporcionar uma maneira interativa e acessível para a população acompanhar esses gastos..
+Este projeto é uma **prova de conceito** desenvolvida para atender à necessidade de monitorar os gastos públicos em verbas indenizatórias na Assembleia Legislativa de Minas Gerais (ALMG). O objetivo é facilitar o acesso a dados sobre o uso de recursos pelos deputados estaduais e proporcionar uma maneira interativa e acessível para a população acompanhar esses gastos.
 
 A plataforma também oferece insights sobre o impacto das redes sociais na divulgação desses dados, permitindo um melhor entendimento sobre os canais mais utilizados pelos parlamentares.
 
